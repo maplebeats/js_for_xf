@@ -1,21 +1,17 @@
 // ==UserScript==
-// @name        xf to aria2
-// @namespace   xf to aria2
-// @description 在web上生成aria2的下载命令,todo文件...选中要下载文件，点击“旋风高速下载”
+// @name        web QQ旋风/xuanfeng
+// @namespace   web QQ旋风/xuanfeng
+// @description 选中要下载文件，点击“旋风高速下载”.生成数据之后复制保存成文件，使用aria2c -s10 -x10 -i file
 // @include     http://lixian.qq.com/main.html*
-// @version     0.1
+// @version     0.2
 // @Author: maplebeats
 // @mail: maplebeats@gmail.com
 // ==/UserScript==
 
 EF = {};
 var fuck_tx = []
-function FTN5K(value)
-{
-    document.cookie="FTN5K=" +escape(value);
-}
 
-EF.get_url = function(code,callback)
+EF.get_url = function(code)
 {
     jQuery.ajax({
             type:"post",
@@ -36,25 +32,31 @@ EF.get_url = function(code,callback)
             error:function(){
                  XF.widget.msgbox.show("请求url失败，FUCK YOU 腾迅",2,2000);
             }
-         });
+     });
 }
 
 EF.popup = function(arr)
 { 
     var url = fuck_tx;
-    var html = '<div>';
+    var post = [];
+    var html = '<div style="height:300px;overflow-y:auto;overflow-x:auto;"';
     for(i in url){
         var data = url[i]['data']
         var cookie = data.com_cookie;
-        html += "<p>aria2c -c -s10 -x10 --header 'Cookie: FTN5K="+cookie+"' "+data.com_url+"</p>";
+        var http = data.com_url;
+        html += "<p>"+http+"<br>"
+        html += "&nbsp;&nbsp;header=Cookie: FTN5K="+cookie+"<br>";
+        //html += "&nbsp;&nbsp;split=10<br>"
+        html += "&nbsp;&nbsp;continue=true<br>"
+        //html += "&nbsp;&nbsp;max-conection-per-server=10<br>"
+        html += "</p>"
+        //html += "<p>aria2c -c -s10 -x10 --header 'Cookie: FTN5K="+cookie+"' "+http+"</p>";
     }
-    //aria2文件下载  header=Cookie: FTN5K=b672c1e1
-    html += '</div>'
+    html += '</div>';
     jQuery("#choose_files_table").html(html);
     window.choose_download_files=new xfDialog("choose_download_files");
     XF.widget.msgbox.hide();
     choose_download_files.show();
-    //XF.widget.msgbox.show("<a href="+data["data"].com_url+">下载连接</a>\nfuckyou",2,6000);
 }
 
 EF.handle_arry = function(data)
@@ -62,7 +64,7 @@ EF.handle_arry = function(data)
     fuck_tx = []
     XF.widget.msgbox.show("正在请求下载连接...",0,20000,true);
     for(i in data){
-        EF.get_url(data[i],EF.handle_url)
+        EF.get_url(data[i])
     }
     EF.popup()
 }
