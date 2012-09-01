@@ -3,13 +3,17 @@
 // @namespace   web QQ旋风/xuanfeng
 // @description 选中要下载文件，点击“旋风高速下载”.生成数据之后复制保存成文件，使用aria2c -s10 -x10 -i file
 // @include     http://lixian.qq.com/main.html*
-// @version     0.2
+// @version     0.3
 // @Author: maplebeats
 // @mail: maplebeats@gmail.com
 // ==/UserScript==
 
 EF = {};
 var fuck_tx = []
+EF.test = function()
+{
+    alert("test sucess")
+}
 
 EF.get_url = function(code)
 {
@@ -35,28 +39,52 @@ EF.get_url = function(code)
      });
 }
 
-EF.popup = function(arr)
+EF.popup = function()
 { 
     var url = fuck_tx;
     var post = [];
     var html = '<div style="height:300px;">'
     html += '<p>点击选中，复制保存至文件，使用<code>aria2 -s10 -x10 -i file</code>下载</p>'
-    html += '<textarea onclick=this.select() style="height:110%;width:100%;overflow:auto;">';
-    for(i in url){
-        var data = url[i]['data']
-        var cookie = data.com_cookie;
-        var http = data.com_url;
-        html += http+"\n&nbsp;&nbsp;header=Cookie: FTN5K="+cookie+"\n";
-        //html += "&nbsp;&nbsp;split=10<br>"
-        html += "&nbsp;&nbsp;continue=true\n"
-        //html += "&nbsp;&nbsp;max-conection-per-server=10<br>"
-        //html += "<p>aria2c -c -s10 -x10 --header 'Cookie: FTN5K="+cookie+"' "+http+"</p>";
-    }
-    html += '</textarea></div>';
+    html += '<select id="choose"><option value=1>aria2下载文件</option><option value=2>aria2下载命令</option><option value=3>wget下载命令</option></select>'
+    html += '<textarea id="dl-data" onclick=this.select() style="background:rgba(0,0,0,0);font-size:100%;height:85%;width:100%;overflow:auto;">';
+    html += EF.creat_data('1');
+    html += '</textarea>';
+    html += '</div>'
     jQuery("#choose_files_table").html(html);
     window.choose_download_files=new xfDialog("choose_download_files");
     XF.widget.msgbox.hide();
     choose_download_files.show();
+    var choose = jQuery("#choose")
+    choose.bind("change",function(){
+        jQuery("#dl-data").html(EF.creat_data(choose.val()));
+    });
+}
+
+EF.creat_data = function(value)
+{
+    var url = fuck_tx;
+    var html = '';
+    for(i in url){
+        var data = url[i]['data']
+        var cookie = data.com_cookie;
+        var http = data.com_url;
+        switch(value){
+            case '1':
+                html += http+"\n&nbsp;&nbsp;header=Cookie: FTN5K="+cookie+"\n";
+                //html += "&nbsp;&nbsp;split=10<br>"
+                html += "&nbsp;&nbsp;continue=true\n";
+                //html += "&nbsp;&nbsp;max-conection-per-server=10<br>"
+                break;
+            case '2':
+                html += "aria2c -c -s10 -x10 --header 'Cookie: FTN5K="+cookie+"' "+http+"\n";
+                break;
+            case '3':
+                html += "wget -c --header Cookie:FTN5K="+cookie+" "+http+"\n";
+            defalut:
+                break;
+        }
+    }
+    return html
 }
 
 EF.handle_arry = function(data)
