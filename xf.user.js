@@ -12,7 +12,7 @@ EF = {};
 var fuck_tx = []
 EF.test = function()
 {
-    alert("test sucess")
+    alert("test success")
 }
 
 EF.get_url = function(code)
@@ -47,7 +47,7 @@ EF.popup = function()
     html += '<p>点击选中，复制保存至文件，使用<code>aria2 -s10 -x10 -i file</code>下载</p>'
     html += '<select id="choose"><option value=1>aria2下载文件</option><option value=2>aria2下载命令</option><option value=3>wget下载命令</option></select>'
     html += '<textarea id="dl-data" onclick=this.select() style="background:rgba(0,0,0,0);font-size:100%;height:85%;width:100%;overflow:auto;">';
-    html += EF.creat_data('1');
+    html += EF.create_data('1');
     html += '</textarea>';
     html += '</div>'
     jQuery("#choose_files_table").html(html);
@@ -56,11 +56,11 @@ EF.popup = function()
     choose_download_files.show();
     var choose = jQuery("#choose")
     choose.bind("change",function(){
-        jQuery("#dl-data").html(EF.creat_data(choose.val()));
+        jQuery("#dl-data").html(EF.create_data(choose.val()));
     });
 }
 
-EF.creat_data = function(value)
+EF.create_data = function(value)
 {
     var url = fuck_tx;
     var html = '';
