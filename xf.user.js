@@ -39,20 +39,20 @@ EF.popup = function(arr)
 { 
     var url = fuck_tx;
     var post = [];
-    var html = '<div style="height:300px;overflow-y:auto;overflow-x:auto;"';
+    var html = '<div style="height:300px;">'
+    html += '<p>点击选中，复制保存至文件，使用<code>aria2 -s10 -x10 -i file</code>下载</p>'
+    html += '<textarea onclick=this.select() style="height:110%;width:100%;overflow:auto;">';
     for(i in url){
         var data = url[i]['data']
         var cookie = data.com_cookie;
         var http = data.com_url;
-        html += "<p>"+http+"<br>"
-        html += "&nbsp;&nbsp;header=Cookie: FTN5K="+cookie+"<br>";
+        html += http+"\n&nbsp;&nbsp;header=Cookie: FTN5K="+cookie+"\n";
         //html += "&nbsp;&nbsp;split=10<br>"
-        html += "&nbsp;&nbsp;continue=true<br>"
+        html += "&nbsp;&nbsp;continue=true\n"
         //html += "&nbsp;&nbsp;max-conection-per-server=10<br>"
-        html += "</p>"
         //html += "<p>aria2c -c -s10 -x10 --header 'Cookie: FTN5K="+cookie+"' "+http+"</p>";
     }
-    html += '</div>';
+    html += '</textarea></div>';
     jQuery("#choose_files_table").html(html);
     window.choose_download_files=new xfDialog("choose_download_files");
     XF.widget.msgbox.hide();
