@@ -10,10 +10,6 @@
 
 EF = {};
 var fuck_tx = [];
-EF.test = function()
-{
-    alert("test success");
-}
 
 EF.get_url = function(code)
 {
@@ -27,7 +23,9 @@ EF.get_url = function(code)
             async: false, //TvT
             success: function(data){
                 if(data&&data.ret==0){
-                    fuck_tx.push(data);
+                    var url = data["data"];
+                    var temp_json = {"name":code.filename,"url":url.com_url,"cookie":url.com_cookie};
+                    fuck_tx.push(temp_json);
                 }
                 else{
                     XF.widget.msgbox.show("请求url失败，FUCK YOU 腾迅",2,2000);
@@ -49,7 +47,7 @@ EF.update = function(data)
 EF.init_pop = function()
 {
     var html = '<div style="height:300px;">';
-    html += '<p>复制命令或者另存为文件，aria2c -i file;可以把下载命令共享给其它人的哦。</p>';
+    html += '<p>复制命令或者另存为文件，aria2c -s10 -x10 -i file;可以把下载命令共享给其它人的哦。</p>';
     html += '<select id="choose"><option value=1>aria2文件</option><option value=2>aria2命令</option><option value=3>wget命令</option><option value=4>IDM文件</option></select>';
     html += '<a id="save-as" style="float:right;" href="data:text/html;charset=utf-8,'+encodeURIComponent(EF.create_data('1'))+'" target="_blank" title="右键另存为" download="test">导出文件(另存为)</a>';
     html += '<textarea id="dl-data" onclick=this.select() style="background:rgba(0,0,0,0);font-size:100%;height:85%;width:100%;overflow:auto;">';
@@ -71,24 +69,27 @@ EF.create_data = function(value)
     var url = fuck_tx;
     var html = '';
     for(i in url){
-        var data = url[i]['data'];
-        var cookie = data.com_cookie;
-        var http = data.com_url;
+        var data = url[i];
+        var cookie = data.cookie;
+        var http = data.url;
+        var name = data.name;
         switch(value){
             case '1':
                 html += http+"\n  header=Cookie: FTN5K="+cookie+"\n";
+                html += "  out="+name+"\n";
                 html += "  continue=true\n";
-                html += "  max-conection-per-server=5\n";
-                html += "  split=10\n";
-                html += "  parameterized-uri=true\n\n";
+                //html += "  max-conection-per-server=5\n";
+                //html += "  split=10\n"; //谁能告诉我为什么这个设置了完全无效？？？？
                 break;
             case '2':
-                html += "aria2c -c -s10 -x10 --header 'Cookie: FTN5K="+cookie+"' "+http+"\n";
+                html += "aria2c -c -s10 -x10 -o '"+ name +"' --header 'Cookie: FTN5K="+cookie+"' "+http+"\n";
                 break;
             case '3':
-                html += "wget -c --header Cookie:FTN5K="+cookie+" "+http+"\n";
+                html += "wget -c -O"+ name +"--header Cookie:FTN5K="+cookie+" "+http+"\n";
+                break;
             case '4':
                 html +='<\r\n'+http+'\r\ncookie: FTN5K='+cookie+'\r\n>\r\n'
+                break;
             defalut:
                 break;
         }
