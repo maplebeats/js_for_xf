@@ -1,12 +1,17 @@
 // ==UserScript==
 // @name        web QQ旋风/xuanfeng
 // @namespace   web QQ旋风/xuanfeng
-// @description 选中要下载文件，点击“旋风高速下载”,使用aria2 -i
+// @description 选中要下载文件，点击“旋风高速下载”
 // @include     http://lixian.qq.com/main.html*
-// @version     0.5
+// @version     0.6
 // @Author: maplebeats
 // @mail: maplebeats@gmail.com
 // ==/UserScript==
+
+/*
+ * BUG:文件重名无法正常下载
+ * TODO:aria2-rpc状态检查等
+ */
 
 EF = {};
 var fuck_tx = [];
@@ -28,15 +33,28 @@ EF.get_url = function(code)
                     fuck_tx.push(temp_json);
                 }
                 else{
-                    XF.widget.msgbox.show("请求url失败，FUCK YOU 腾迅",2,2000);
+                    XF.widget.msgbox.show("请求url失败",2,2000);
                 }
             },
             error:function(){
-                 XF.widget.msgbox.show("请求url失败，FUCK YOU 腾迅",2,2000);
+                 XF.widget.msgbox.show("请求url失败",2,2000);
             }
      });
 }
-
+EF.rpc = function()
+{   
+    var data = fuck_tx;
+    var url = jQuery("#rpc-url").val();
+    for(i in data){
+        var tmp = data[i];
+        var uri = {'jsonrpc':'2.0','id':(new Date()).getTime().toString(),'method':'aria2.addUri','params':[[tmp.url, ], {'out':tmp.name,'header':'Cookie: FTN5K='+tmp.cookie}]};/*,'split':'10','continue':'true','max-conection-per-server':'5','parameterized-uri':'true'}]};*/
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", url + "?tt="+(new Date()).getTime().toString(), true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+        xhr.send(JSON.stringify(uri));
+    }
+    XF.widget.msgbox.show("任务已经添加至aria2-rpc,请自行查看",2,2000)
+}
 EF.update = function(data)
 { 
     jQuery("#dl-data").html(data);
@@ -47,8 +65,9 @@ EF.update = function(data)
 EF.init_pop = function()
 {
     var html = '<div style="height:300px;">';
-    html += '<p>复制命令或者另存为文件，aria2c -s10 -x10 -i file;可以把下载命令共享给其它人的哦。</p>';
+    html += '<p>aria2c -c -s10 -x10 --enable-rpc/-i file</p>';
     html += '<select id="choose"><option value=1>aria2文件</option><option value=2>aria2命令</option><option value=3>wget命令</option><option value=4>IDM文件</option></select>';
+    html += '<input id="rpc-url" type="text" style="width:200px;background:rgba(0,0,0,0);" onFocus=\"this.value=\'\'\" value="http://localhost:6800/jsonrpc"></input><button id="rpc">RPC</button>';
     html += '<a id="save-as" style="float:right;" href="data:text/html;charset=utf-8,'+encodeURIComponent(EF.create_data('1'))+'" target="_blank" title="右键另存为" download="test">导出文件(另存为)</a>';
     html += '<textarea id="dl-data" onclick=this.select() style="background:rgba(0,0,0,0);font-size:100%;height:85%;width:100%;overflow:auto;">';
     html += EF.create_data('1');
@@ -58,7 +77,11 @@ EF.init_pop = function()
     window.choose_download_files=new xfDialog("choose_download_files");
     XF.widget.msgbox.hide();
     choose_download_files.show();
-    var choose = jQuery("#choose")
+    var rpc = jQuery("#rpc");
+    rpc.bind("click",function(){
+            EF.rpc();
+    });
+    var choose = jQuery("#choose");
     choose.bind("change",function(){
         EF.update(EF.create_data(choose.val()));
     });
@@ -78,6 +101,7 @@ EF.create_data = function(value)
                 html += http+"\n  header=Cookie: FTN5K="+cookie+"\n";
                 html += "  out="+name+"\n";
                 html += "  continue=true\n";
+                //html += "  parameterized-uri=true\n";
                 //html += "  max-conection-per-server=5\n";
                 //html += "  split=10\n"; //谁能告诉我为什么这个设置了完全无效？？？？
                 break;
