@@ -3,7 +3,7 @@
 // @namespace   web QQ旋风/xuanfeng
 // @description 选中要下载文件，点击“旋风高速下载”
 // @include     http://lixian.qq.com/main.html*
-// @version     0.7.1
+// @version     0.7.2
 // @Author: maplebeats
 // @mail: maplebeats@gmail.com
 // ==/UserScript==
@@ -106,6 +106,7 @@ EF.update = function(data)
 EF.init_pop = function()
 {
     var html = '<div class="choose_start" style="height:150px;">';
+    //var issue = "<a href='https://github.com/maplebeats/js_for_xf'><em>issue地址</em></a>";
     html += '<p>运行<code>aria2c -c -s10 -x10 -i file</code>使用下载文件</p>';
     html += '<div>';
     html += '<select id="choose" style="background:rgba(255,255,255,0.5);"><option value=1>aria2文件</option><option value=2>aria2命令</option><option value=3>wget命令</option><option value=4>IDM文件</option></select>';
@@ -124,8 +125,7 @@ EF.init_pop = function()
     XF.widget.msgbox.hide();
     choose_download_files.show();
     jQuery(".com_win_head_wrap em").html("导出");
-    var issue = "<a href='https://github.com/maplebeats/js_for_xf'><em>issue地址</em></a>";
-    jQuery(".opt").html(issue);
+    jQuery(".opt").hide();
     var rpc = jQuery("#rpc");
     rpc.bind("click",function(){
             EF.rpc();
@@ -133,6 +133,13 @@ EF.init_pop = function()
     var choose = jQuery("#choose");
     choose.bind("change",function(){
         EF.update(EF.create_data(choose.val()));
+    });
+
+    //recovery choose file table
+    var recovery = jQuery("#choose_download_files .close_win");
+    recovery.bind("click",function(){
+        jQuery(".com_win_head_wrap em").html("下载任务");
+        jQuery(".opt").show();
     });
 }
 
