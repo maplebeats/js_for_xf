@@ -3,7 +3,7 @@
 // @namespace   web QQ旋风/xuanfeng
 // @description 选中要下载文件，点击“旋风高速下载”
 // @include     http://lixian.qq.com/main.html*
-// @version     0.7
+// @version     0.7.1
 // @Author: maplebeats
 // @mail: maplebeats@gmail.com
 // ==/UserScript==
@@ -22,8 +22,9 @@ jQuery("#down_box").remove();
 jQuery(".mod_copyright").remove();
 jQuery(".top").remove();
 //init
-jQuery("#task_share_multi em").html("其它软件导出");
-EventHandler.task_share = function(e)
+jQuery("#task_dl_local em").html("Aria2导出");
+
+EventHandler.task_batch2local = function(e)
 {
     var disabled=jQuery(e).hasClass("disabled_btn");
     if(disabled){
@@ -54,7 +55,7 @@ EventHandler.task_share = function(e)
         EF.handle_arry(dl_tasks);
     }
 }
-EventHandler.task_batch2local = EventHandler.task_share; //把旋风高速的键钮也X掉了
+//EventHandler.task_batch2local = EventHandler.task_share; //把旋风高速的键钮也X掉了
 
 EF.get_url = function(code)
 {
@@ -104,11 +105,11 @@ EF.update = function(data)
 
 EF.init_pop = function()
 {
-    var html = '<div class="choose_start" style="height:300px;">';
+    var html = '<div class="choose_start" style="height:150px;">';
     html += '<p>运行<code>aria2c -c -s10 -x10 -i file</code>使用下载文件</p>';
     html += '<div>';
     html += '<select id="choose" style="background:rgba(255,255,255,0.5);"><option value=1>aria2文件</option><option value=2>aria2命令</option><option value=3>wget命令</option><option value=4>IDM文件</option></select>';
-    html += '---><a id="save-as" style="" href="data:text/html;charset=utf-8,'+encodeURIComponent(EF.create_data('1'))+'" target="_blank" title="右键另存为" download="test"><span><em>导出文件(右键另存为)</span></em></a>';
+    html += '---><a id="save-as" style="color:red" href="data:text/html;charset=utf-8,'+encodeURIComponent(EF.create_data('1'))+'" target="_blank" title="右键另存为" download="test"><span><em>导出文件(右键另存为)</span></em></a>';
     html += '</div>';
     html += '<div style="margin-top: 20px;">';
     html += '<p>后台运行<code>aria2c -c -s10 -x10 --enable-rpc</code>即可直接使用RPC按钮增加任务</p>';
