@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name        web QQ旋风/xuanfeng
 // @namespace   web QQ旋风/xuanfeng
-// @description 选中要下载文件，点击“旋风高速下载”
+// @description 旋风离线链接导出
 // @include     http://lixian.qq.com/main.html*
-// @version     0.7.3
+// @version     0.7.4
 // @Author: maplebeats
 // @mail: maplebeats@gmail.com
 // ==/UserScript==
@@ -34,14 +34,12 @@ function contentEval(source) {
 }
 
 contentEval(function () {
-    //强迫症。。。去掉无用的元素
     jQuery("#share_opt").remove();
     jQuery("#down_box").remove();
     jQuery(".mod_copyright").remove();
     jQuery(".top").remove();
     jQuery(".search_box").remove();
 
-    //init
     jQuery("#task_dl_local em").html("Aria2导出");
 });
 contentEval(function () {
@@ -74,6 +72,7 @@ contentEval(function () {
     EF.rpc = function () {
         var data = fuck_tx;
         var url = jQuery("#rpc-url").val();
+        localStorage.rpc = url;
         for (i in data) {
             var tmp = data[i];
             var uri = { 'jsonrpc': '2.0', 'id': (new Date()).getTime().toString(), 'method': 'aria2.addUri', 'params': [[tmp.url, ], { 'out': tmp.name, 'header': 'Cookie: FTN5K=' + tmp.cookie}] }; /*,'split':'10','continue':'true','max-conection-per-server':'5','parameterized-uri':'true'}]};*/
@@ -85,14 +84,17 @@ contentEval(function () {
         XF.widget.msgbox.show("任务已经添加至aria2-rpc,请自行查看", 0, 2000, true)
     }
     EF.update = function (data) {
-        //jQuery("#dl-data").html(data);
         var href = "data:text/html;charset=utf-8," + encodeURIComponent(data);
         jQuery("#save-as").attr("href", href);
     }
-
+    EF.getrpc = function(){
+        if(localStorage.rpc)
+            return localStorage.rpc;
+        else
+            return 'http://localhost:6800/jsonrpc';
+    }
     EF.init_pop = function () {
         var html = '<div class="choose_start" style="height:150px;">';
-        //var issue = "<a href='https://github.com/maplebeats/js_for_xf'><em>issue地址</em></a>";
         html += '<p>运行<code>aria2c -c -s10 -x10 -i file</code>使用下载文件</p>';
         html += '<div>';
         html += '<select id="choose" style="background:rgba(255,255,255,0.5);"><option value=1>aria2文件</option><option value=2>aria2命令</option><option value=3>wget命令</option><option value=4>IDM文件</option></select>';
@@ -100,11 +102,8 @@ contentEval(function () {
         html += '</div>';
         html += '<div style="margin-top: 20px;">';
         html += '<p>后台运行<code>aria2c -c -s10 -x10 --enable-rpc</code>即可直接使用RPC按钮增加任务</p>';
-        html += '<div><input id="rpc-url" type="text" style="width:200px;background:rgba(0,0,0,0);" onFocus=\"this.value=\'\'\" value="http://crazylin.kmdns.net:6800/jsonrpc"></input></div><div id="rpc" class="com_opt_btn"><span><em>RPC</em></span></div>';
+        html += '<div><input id="rpc-url" type="text" style="width:200px;background:rgba(0,0,0,0);" value="'+EF.getrpc()+'"></input></div><div id="rpc" class="com_opt_btn"><span><em>RPC</em></span></div>';
         html += '</div>';
-        //html += '<textarea id="dl-data" onclick=this.select() style="background:rgba(0,0,0,0);font-size:100%;height:85%;width:100%;overflow:auto;">';
-        //html += EF.create_data('1');
-        //html += '</textarea>';
         html += '</div>';
         jQuery("#choose_files_table").html(html);
         window.choose_download_files = new xfDialog("choose_download_files");
@@ -203,4 +202,3 @@ contentEval(function () {
 
 });
 
-//EventHandler.task_batch2local = EventHandler.task_share; //把旋风高速的键钮也X掉了
