@@ -94,17 +94,17 @@ contentEval(function () {
             return 'http://localhost:6800/jsonrpc';
     }
     EF.init_pop = function () {
-        var html = '<div class="choose_start" style="height:150px;">';
-        html += '<p>运行<code>aria2c -c -s10 -x10 -i file</code>使用下载文件</p>';
-        html += '<div>';
-        html += '<select id="choose" style="background:rgba(255,255,255,0.5);"><option value=1>aria2文件</option><option value=2>aria2命令</option><option value=3>wget命令</option><option value=4>IDM文件</option></select>';
-        html += '---><a id="save-as" style="color:red" href="data:text/html;charset=utf-8,' + encodeURIComponent(EF.create_data('1')) + '" target="_blank" title="右键另存为" download="test"><span><em>导出文件(右键另存为)</span></em></a>';
-        html += '</div>';
-        html += '<div style="margin-top: 20px;">';
-        html += '<p>后台运行<code>aria2c -c -s10 -x10 --enable-rpc</code>即可直接使用RPC按钮增加任务</p>';
-        html += '<div><input id="rpc-url" type="text" style="width:200px;background:rgba(0,0,0,0);" value="'+EF.getrpc()+'"></input></div><div id="rpc" class="com_opt_btn"><span><em>RPC</em></span></div>';
-        html += '</div>';
-        html += '</div>';
+        var html = '<div class="choose_start" style="height:150px;">'+
+        '<p>运行<code>aria2c -c -s10 -x10 -i file</code>使用下载文件</p>'+
+        '<div>'+
+        '<select id="choose" style="background:rgba(255,255,255,0.5);"><option value=1>aria2文件</option><option value=2>aria2命令</option><option value=3>wget命令</option></select>'+
+        '---><a id="save-as" style="color:red" href="data:text/html;charset=utf-8,' + encodeURIComponent(EF.create_data('1')) + '" target="_blank" title="右键另存为" download="test"><span><em>导出文件(右键另存为)</span></em></a>'+
+        '</div>'+
+        '<div style="margin-top: 20px;">'+
+        '<p>后台运行<code>aria2c -c -s10 -x10 --enable-rpc</code>即可直接使用RPC按钮增加任务</p>'+
+        '<div><input id="rpc-url" type="text" style="width:200px;background:rgba(0,0,0,0);" value="'+EF.getrpc()+'"></input></div><div id="rpc" class="com_opt_btn"><span><em>RPC</em></span></div>'+
+        '</div>'+
+        '</div>';
         jQuery("#choose_files_table").html(html);
         window.choose_download_files = new xfDialog("choose_download_files");
         XF.widget.msgbox.hide();
@@ -120,7 +120,6 @@ contentEval(function () {
             EF.update(EF.create_data(choose.val()));
         });
 
-        //recovery choose file table
         var recovery = jQuery("#choose_download_files .close_win");
         recovery.bind("click", function () {
             jQuery(".com_win_head_wrap em").html("下载任务");
@@ -138,9 +137,9 @@ contentEval(function () {
             var name = data.name;
             switch (value) {
                 case '1':
-                    html += http + "\n  header=Cookie: FTN5K=" + cookie + "\n";
-                    html += "  out=" + name + "\n";
-                    html += "  continue=true\n";
+                    html += http + "\n  header=Cookie: FTN5K=" + cookie + "\n"+
+                    "  out=" + name + "\n" +
+                    "  continue=true\n";
                     //html += "  parameterized-uri=true\n";
                     //html += "  max-conection-per-server=5\n";
                     //html += "  split=10\n"; //谁能告诉我为什么这个设置了完全无效？？？？
@@ -151,10 +150,7 @@ contentEval(function () {
                 case '3':
                     html += "wget -c -O " + name + "--header Cookie:FTN5K=" + cookie + " " + http + "\n";
                     break;
-                case '4':
-                    html += '<\r\n' + http + '\r\ncookie: FTN5K=' + cookie + '\r\n>\r\n'
-                    break;
-                    defalut:
+                defalut:
                     break;
             }
         }
