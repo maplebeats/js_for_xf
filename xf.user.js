@@ -9,7 +9,7 @@
 // ==/UserScript==
 
 /*
-* BUG:文件重名无法正常下载,请求失败无法处理.....异步再现太2
+* BUG:文件重名无法正常下载.....
 * TODO:aria2-rpc状态检查等
 */
 
@@ -34,21 +34,22 @@ function contentEval(source) {
 }
 
 contentEval(function () {
-    jQuery("#share_opt").remove();
-    jQuery("#down_box").remove();
-    jQuery(".mod_copyright").remove();
-    jQuery(".top").remove();
-    jQuery(".search_box").remove();
+    $("#share_opt").remove();
+    $("#down_box").remove();
+    $(".mod_copyright").remove();
+    $(".top").remove();
+    $(".search_box").remove();
 
-    jQuery("#task_dl_local em").html("Aria2导出");
-    jQuery("#task_share_multi em").html('一键RPC');
+    $("#task_dl_local em").html("Aria2导出");
+    $("#task_share_multi em").html('一键RPC');
 });
 contentEval(function () {
     EF = {};
     var task_info = [];
     var mode = 1;
-    EF.get_url = function (code,tasks_count) {
-        jQuery.ajax({
+    var t_count = 0;
+    EF.get_url = function (code) {
+        $.ajax({
             type: "post",
             url: "/handler/lixian/get_http_url.php",
             data: code,
@@ -61,38 +62,44 @@ contentEval(function () {
                     var url = data["data"];
                     var temp_json = { "name": code.filename, "url": url.com_url, "cookie": url.com_cookie };
                     task_info.push(temp_json);
-                    EF.task_check(tasks_count);
+                    EF.task_check();
                 }
                 else {
                     XF.widget.msgbox.show("请求url失败", 2, 2000);
+                    t_count--;
+                    EF.task_check();
                 }
             },
             error: function () {
                 XF.widget.msgbox.show("请求url失败", 2, 2000);
+                t_count--;
+                EF.task_check();
             }
         });
     }
     EF.task_check =  function(tasks_count){
         var count = task_info.length;
-        if(count == tasks_count){
+        if(count == t_count){
             if(mode === 1){
                 EF.init_pop();
             }else if(mode === 2){
                 EF.rpc();
             }
+            t_count = 0; //re
         }else{
             return false;
         }
     }
     EF.rpc = function (data) {
         var data = task_info;
-        var url = jQuery("#rpc-url").val();
+        var url = $("#rpc-url").val();
         if(url == undefined){
             url = localStorage.rpc;
         }else{
             localStorage.rpc = url;
         }
-        for (i in data) {
+        var count = data.length;
+        for (var i=0;i<count;i++) {
             var tmp = data[i];
             var uri = { 'jsonrpc': '2.0', 'id': (new Date()).getTime().toString(), 'method': 'aria2.addUri', 'params': [[tmp.url, ], { 'out': tmp.name, 'header': 'Cookie: FTN5K=' + tmp.cookie}] }; /*,'split':'10','continue':'true','max-conection-per-server':'5','parameterized-uri':'true'}]};*/
             var xhr = new XMLHttpRequest();
@@ -101,10 +108,6 @@ contentEval(function () {
             xhr.send(JSON.stringify(uri));
         }
         XF.widget.msgbox.show("任务已经添加至aria2-rpc,请自行查看", 0, 1000, false)
-    }
-    EF.update = function (data) {
-        var href = "data:text/html;charset=utf-8," + encodeURIComponent(data);
-        jQuery("#save-as").attr("href", href);
     }
     EF.get_rpc = function(){
         if(localStorage.rpc)
@@ -124,32 +127,32 @@ contentEval(function () {
         '<div><input id="rpc-url" type="text" style="width:200px;background:rgba(0,0,0,0);" value="'+EF.get_rpc()+'"></input></div><div id="rpc" class="com_opt_btn"><span><em>RPC</em></span></div>'+
         '</div>'+
         '</div>';
-        jQuery("#choose_files_table").html(html);
+        $("#choose_files_table").html(html);
         window.choose_download_files = new xfDialog("choose_download_files");
         XF.widget.msgbox.hide();
         choose_download_files.show();
-        jQuery(".com_win_head_wrap em").html("导出");
-        jQuery(".opt").hide();
-        var rpc = jQuery("#rpc");
-        rpc.bind("click", function () {
+        $(".com_win_head_wrap em").html("导出");
+        $(".opt").hide();
+
+        $("#rpc").bind("click", function () {
             EF.rpc();
         });
-        var choose = jQuery("#choose");
-        choose.bind("change", function () {
-            EF.update(EF.create_data(choose.val()));
+        $("#choose").bind("change", function () {
+            var data = EF.create_data(choose.val());
+            var href = "data:text/html;charset=utf-8," + encodeURIComponent(data);
+            $("#save-as").attr("href", href);
         });
-
-        var recovery = jQuery("#choose_download_files .close_win");
-        recovery.bind("click", function () {
-            jQuery(".com_win_head_wrap em").html("下载任务");
-            jQuery(".opt").show();
+        $("#choose_download_files .close_win").bind("click", function () {
+            $(".com_win_head_wrap em").html("下载任务");
+            $(".opt").show();
         });
     }
 
     EF.create_data = function (value) {
         var url = task_info;
         var html = '';
-        for (i in url) {
+        var count = url.length;
+        for (var i=0;i<count;i++) {
             var data = url[i];
             var cookie = data.cookie;
             var http = data.url;
@@ -199,28 +202,26 @@ contentEval(function () {
             return dl_tasks;
         }
     }
+    EF.hander_tasks = function(){
+        task_info = [];
+        var data = EF.get_choice();
+        t_count = data.length;
+        for (var i=0;i<t_count;i++) {
+            EF.get_url(data[i]);
+        }
+    }
     EventHandler.task_batch2local = function (e) {
-        var disabled = jQuery(e).hasClass("disabled_btn");
+        var disabled = $(e).hasClass("disabled_btn");
         if (disabled) {
             return false;
         }
-        task_info = [];
-        var data = EF.get_choice();
         XF.widget.msgbox.show("后台开始请求下载连接...", 0, 200, false);
-        var tasks_count = data.length;
-        for (var i=0;i<tasks_count;i++) {
-            EF.get_url(data[i],tasks_count);
-        }
+        EF.hander_tasks();
         mode = 1;
     }
     EventHandler.task_share = function(e){
         XF.widget.msgbox.show('后台添加任务中', 0, 200, false);
-        task_info = [];
-        var data = EF.get_choice();
-        var tasks_count = data.length;
-        for (var i=0;i<tasks_count;i++) {
-            EF.get_url(data[i],tasks_count);
-        }
+        EF.hander_tasks();
         mode = 2;
     }
 });
