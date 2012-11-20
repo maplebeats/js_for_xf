@@ -3,7 +3,7 @@
 // @namespace   web QQ旋风/xuanfeng
 // @description 旋风离线链接导出
 // @include     http://lixian.qq.com/main.html*
-// @version     0.7.4
+// @version     0.8
 // @Author: maplebeats
 // @mail: maplebeats@gmail.com
 // ==/UserScript==
@@ -224,14 +224,4 @@ contentEval(function () {
         mode = 2;
     }
 });
-
-
-
-
-
-
-
-
-
-
 
