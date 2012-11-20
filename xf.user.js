@@ -9,7 +9,7 @@
 // ==/UserScript==
 
 /*
-* BUG:文件重名无法正常下载
+* BUG:文件重名无法正常下载,请求失败无法处理.....异步再现太2
 * TODO:aria2-rpc状态检查等
 */
 
@@ -41,11 +41,13 @@ contentEval(function () {
     jQuery(".search_box").remove();
 
     jQuery("#task_dl_local em").html("Aria2导出");
+    jQuery("#task_share_multi em").html('一键RPC');
 });
 contentEval(function () {
     EF = {};
-    var fuck_tx = [];
-    EF.get_url = function (code) {
+    var task_info = [];
+    var mode = 1;
+    EF.get_url = function (code,tasks_count) {
         jQuery.ajax({
             type: "post",
             url: "/handler/lixian/get_http_url.php",
@@ -53,12 +55,13 @@ contentEval(function () {
             cache: false,
             timeout: 10000,
             dataType: "json",
-            async: false, //TvT
+            async: true, //TvT
             success: function (data) {
                 if (data && data.ret == 0) {
                     var url = data["data"];
                     var temp_json = { "name": code.filename, "url": url.com_url, "cookie": url.com_cookie };
-                    fuck_tx.push(temp_json);
+                    task_info.push(temp_json);
+                    EF.task_check(tasks_count);
                 }
                 else {
                     XF.widget.msgbox.show("请求url失败", 2, 2000);
@@ -69,25 +72,41 @@ contentEval(function () {
             }
         });
     }
-    EF.rpc = function () {
-        var data = fuck_tx;
+    EF.task_check =  function(tasks_count){
+        var count = task_info.length;
+        if(count == tasks_count){
+            if(mode === 1){
+                EF.init_pop();
+            }else if(mode === 2){
+                EF.rpc();
+            }
+        }else{
+            return false;
+        }
+    }
+    EF.rpc = function (data) {
+        var data = task_info;
         var url = jQuery("#rpc-url").val();
-        localStorage.rpc = url;
+        if(url == undefined){
+            url = localStorage.rpc;
+        }else{
+            localStorage.rpc = url;
+        }
         for (i in data) {
             var tmp = data[i];
             var uri = { 'jsonrpc': '2.0', 'id': (new Date()).getTime().toString(), 'method': 'aria2.addUri', 'params': [[tmp.url, ], { 'out': tmp.name, 'header': 'Cookie: FTN5K=' + tmp.cookie}] }; /*,'split':'10','continue':'true','max-conection-per-server':'5','parameterized-uri':'true'}]};*/
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", url + "?tt=" + (new Date()).getTime().toString(), true);
+            xhr.open("POST", url + "?tm=" + (new Date()).getTime().toString(), true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
             xhr.send(JSON.stringify(uri));
         }
-        XF.widget.msgbox.show("任务已经添加至aria2-rpc,请自行查看", 0, 2000, true)
+        XF.widget.msgbox.show("任务已经添加至aria2-rpc,请自行查看", 0, 1000, false)
     }
     EF.update = function (data) {
         var href = "data:text/html;charset=utf-8," + encodeURIComponent(data);
         jQuery("#save-as").attr("href", href);
     }
-    EF.getrpc = function(){
+    EF.get_rpc = function(){
         if(localStorage.rpc)
             return localStorage.rpc;
         else
@@ -102,7 +121,7 @@ contentEval(function () {
         '</div>'+
         '<div style="margin-top: 20px;">'+
         '<p>后台运行<code>aria2c -c -s10 -x10 --enable-rpc</code>即可直接使用RPC按钮增加任务</p>'+
-        '<div><input id="rpc-url" type="text" style="width:200px;background:rgba(0,0,0,0);" value="'+EF.getrpc()+'"></input></div><div id="rpc" class="com_opt_btn"><span><em>RPC</em></span></div>'+
+        '<div><input id="rpc-url" type="text" style="width:200px;background:rgba(0,0,0,0);" value="'+EF.get_rpc()+'"></input></div><div id="rpc" class="com_opt_btn"><span><em>RPC</em></span></div>'+
         '</div>'+
         '</div>';
         jQuery("#choose_files_table").html(html);
@@ -128,7 +147,7 @@ contentEval(function () {
     }
 
     EF.create_data = function (value) {
-        var url = fuck_tx;
+        var url = task_info;
         var html = '';
         for (i in url) {
             var data = url[i];
@@ -156,21 +175,7 @@ contentEval(function () {
         }
         return html
     }
-
-    EF.handle_arry = function (data) {
-        fuck_tx = [];
-        XF.widget.msgbox.show("正在请求下载连接...", 0, 20000, true);
-        for (i in data) {
-            EF.get_url(data[i]);
-        }
-        EF.init_pop();
-    }
-    EventHandler.task_batch2local = function (e) {
-        var disabled = jQuery(e).hasClass("disabled_btn");
-        if (disabled) {
-            return false;
-        }
-
+    EF.get_choice = function(){
         var dl_tasks = [];
         var tmp_taskid_str = '';
         var tasks_count = 0;
@@ -188,13 +193,45 @@ contentEval(function () {
             tmp_taskid_str = task_id;
             tasks_count++;
         }
-
-        if (tasks_count == 0) {
-        }
-        else {
-            EF.handle_arry(dl_tasks);
+        if(tasks_count == 0){
+            return false;
+        }else{
+            return dl_tasks;
         }
     }
-
+    EventHandler.task_batch2local = function (e) {
+        var disabled = jQuery(e).hasClass("disabled_btn");
+        if (disabled) {
+            return false;
+        }
+        task_info = [];
+        var data = EF.get_choice();
+        XF.widget.msgbox.show("后台开始请求下载连接...", 0, 200, false);
+        var tasks_count = data.length;
+        for (var i=0;i<tasks_count;i++) {
+            EF.get_url(data[i],tasks_count);
+        }
+        mode = 1;
+    }
+    EventHandler.task_share = function(e){
+        XF.widget.msgbox.show('后台添加任务中', 0, 200, false);
+        task_info = [];
+        var data = EF.get_choice();
+        var tasks_count = data.length;
+        for (var i=0;i<tasks_count;i++) {
+            EF.get_url(data[i],tasks_count);
+        }
+        mode = 2;
+    }
 });
+
+
+
+
+
+
+
+
+
+
 
