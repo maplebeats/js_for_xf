@@ -9,7 +9,7 @@
 // ==/UserScript==
 
 /*
-* BUG:文件重名无法正常下载.....
+* BUG:文件重名无法正常下载.....jQuery/$
 * TODO:aria2-rpc状态检查等
 */
 
