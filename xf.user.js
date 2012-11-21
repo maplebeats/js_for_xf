@@ -34,14 +34,14 @@ function contentEval(source) {
 }
 
 contentEval(function () {
-    $("#share_opt").remove();
-    $("#down_box").remove();
-    $(".mod_copyright").remove();
-    $(".top").remove();
-    $(".search_box").remove();
+    jQuery("#share_opt").remove();
+    jQuery("#down_box").remove();
+    jQuery(".mod_copyright").remove();
+    jQuery(".top").remove();
+    jQuery(".search_box").remove();
 
-    $("#task_dl_local em").html("Aria2导出");
-    $("#task_share_multi em").html('一键RPC');
+    jQuery("#task_dl_local em").html("Aria2导出");
+    jQuery("#task_share_multi em").html('一键RPC');
 });
 contentEval(function () {
     EF = {};
@@ -49,7 +49,7 @@ contentEval(function () {
     var mode = 1;
     var t_count = 0;
     EF.get_url = function (code) {
-        $.ajax({
+        jQuery.ajax({
             type: "post",
             url: "/handler/lixian/get_http_url.php",
             data: code,
@@ -77,7 +77,7 @@ contentEval(function () {
             }
         });
     }
-    EF.task_check =  function(tasks_count){
+    EF.task_check =  function(){
         var count = task_info.length;
         if(count == t_count){
             if(mode === 1){
@@ -92,7 +92,7 @@ contentEval(function () {
     }
     EF.rpc = function (data) {
         var data = task_info;
-        var url = $("#rpc-url").val();
+        var url = jQuery("#rpc-url").val();
         if(url == undefined){
             url = localStorage.rpc;
         }else{
@@ -127,24 +127,24 @@ contentEval(function () {
         '<div><input id="rpc-url" type="text" style="width:200px;background:rgba(0,0,0,0);" value="'+EF.get_rpc()+'"></input></div><div id="rpc" class="com_opt_btn"><span><em>RPC</em></span></div>'+
         '</div>'+
         '</div>';
-        $("#choose_files_table").html(html);
+        jQuery("#choose_files_table").html(html);
         window.choose_download_files = new xfDialog("choose_download_files");
         XF.widget.msgbox.hide();
         choose_download_files.show();
-        $(".com_win_head_wrap em").html("导出");
-        $(".opt").hide();
+        jQuery(".com_win_head_wrap em").html("导出");
+        jQuery(".opt").hide();
 
-        $("#rpc").bind("click", function () {
+        jQuery("#rpc").bind("click", function () {
             EF.rpc();
         });
-        $("#choose").bind("change", function () {
+        jQuery("#choose").bind("change", function () {
             var data = EF.create_data(choose.val());
             var href = "data:text/html;charset=utf-8," + encodeURIComponent(data);
-            $("#save-as").attr("href", href);
+            jQuery("#save-as").attr("href", href);
         });
-        $("#choose_download_files .close_win").bind("click", function () {
-            $(".com_win_head_wrap em").html("下载任务");
-            $(".opt").show();
+        jQuery("#choose_download_files .close_win").bind("click", function () {
+            jQuery(".com_win_head_wrap em").html("下载任务");
+            jQuery(".opt").show();
         });
     }
 
@@ -205,13 +205,14 @@ contentEval(function () {
     EF.hander_tasks = function(){
         task_info = [];
         var data = EF.get_choice();
+        console.log(data);
         t_count = data.length;
         for (var i=0;i<t_count;i++) {
             EF.get_url(data[i]);
         }
     }
     EventHandler.task_batch2local = function (e) {
-        var disabled = $(e).hasClass("disabled_btn");
+        var disabled = jQuery(e).hasClass("disabled_btn");
         if (disabled) {
             return false;
         }
