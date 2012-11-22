@@ -223,6 +223,10 @@ contentEval(function () {
         mode = 1;
     }
     EventHandler.task_share = function(e){
+        var disabled = jQuery(e).hasClass("disabled_btn");
+        if (disabled) {
+            return false;
+        }
         XF.widget.msgbox.show('后台添加任务中', 0, 1000, false);
         EF.hander_tasks();
         mode = 2;
