@@ -3,13 +3,14 @@
 // @namespace   web QQ旋风/xuanfeng
 // @description 旋风离线链接导出
 // @include     http://lixian.qq.com/main.html*
-// @version     0.8
+// @version     0.8.1
 // @Author: maplebeats
 // @mail: maplebeats@gmail.com
 // ==/UserScript==
 
 /*
-* BUG:文件重名无法正常下载.....jQuery/$
+* BUG:文件重名无法正常下载.....
+* TIPS:$是tencent自己的一个function,不是jQuery
 * TODO:aria2-rpc状态检查等
 */
 
@@ -217,12 +218,12 @@ contentEval(function () {
         if (disabled) {
             return false;
         }
-        XF.widget.msgbox.show("后台开始请求下载连接...", 0, 200, false);
+        XF.widget.msgbox.show("后台开始请求下载连接...", 0, 1000, false);
         EF.hander_tasks();
         mode = 1;
     }
     EventHandler.task_share = function(e){
-        XF.widget.msgbox.show('后台添加任务中', 0, 200, false);
+        XF.widget.msgbox.show('后台添加任务中', 0, 1000, false);
         EF.hander_tasks();
         mode = 2;
     }
