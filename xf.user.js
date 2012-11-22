@@ -137,7 +137,8 @@ contentEval(function () {
         jQuery("#rpc").bind("click", function () {
             EF.rpc();
         });
-        jQuery("#choose").bind("change", function () {
+        var choose = jQuery("#choose");
+        choose.bind("change", function () {
             var data = EF.create_data(choose.val());
             var href = "data:text/html;charset=utf-8," + encodeURIComponent(data);
             jQuery("#save-as").attr("href", href);
