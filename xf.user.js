@@ -108,6 +108,7 @@ contentEval(function () {
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
             xhr.send(JSON.stringify(uri));
         }
+        XF.widget.msgbox.hide();
         XF.widget.msgbox.show("任务已经添加至aria2-rpc,请自行查看", 0, 1000, false)
     }
     EF.get_rpc = function(){
