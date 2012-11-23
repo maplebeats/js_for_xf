@@ -3,7 +3,7 @@
 // @namespace   web QQ旋风/xuanfeng
 // @description 旋风离线链接导出
 // @include     http://lixian.qq.com/main.html*
-// @version     0.8.1
+// @version     0.8.2
 // @Author: maplebeats
 // @mail: maplebeats@gmail.com
 // ==/UserScript==
@@ -35,7 +35,7 @@ function contentEval(source) {
 }
 
 contentEval(function () {
-    jQuery("#share_opt").remove();
+    jQuery("#share_opt").html('<progress id="re-pro" value=0></progress>');
     jQuery("#down_box").remove();
     jQuery(".mod_copyright").remove();
     jQuery(".top").remove();
@@ -80,6 +80,7 @@ contentEval(function () {
     }
     EF.task_check =  function(){
         var count = task_info.length;
+        jQuery('#re-pro').attr('max',t_count).attr('value',count);
         if(count == t_count){
             if(mode === 1){
                 EF.init_pop();
@@ -87,6 +88,7 @@ contentEval(function () {
                 EF.rpc();
             }
             t_count = 0; //re
+            jQuery('#re-pro').attr('value',0);
         }else{
             return false;
         }
