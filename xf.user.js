@@ -3,7 +3,7 @@
 // @namespace   web QQ旋风/xuanfeng
 // @description 旋风离线链接导出
 // @include     http://lixian.qq.com/main.html*
-// @version     0.8.2
+// @version     0.9.0
 // @Author: maplebeats
 // @mail: maplebeats@gmail.com
 // ==/UserScript==
@@ -35,7 +35,12 @@ function contentEval(source) {
 }
 
 contentEval(function () {
-    jQuery("#share_opt").html('<progress id="re-pro" value=0></progress>');
+    var context = '<progress id="re-pro" value=0 style="width:280px;"></progress>'+
+        '<font color="red"></font>'+
+        '<div id="messager" style="border:1px solid;margin-top:5px;padding:5px;width:280px;">Welcome</div>';
+    jQuery("#share_opt").html(context).css('float','left').css('width','250px').css('margin','20px');
+    jQuery('.main').css('width','80%');
+    jQuery('#cont_wrap').css('width','100%');
     jQuery("#down_box").remove();
     jQuery(".mod_copyright").remove();
     jQuery(".top").remove();
@@ -87,8 +92,8 @@ contentEval(function () {
             }else if(mode === 2){
                 EF.rpc();
             }
+            jQuery('#share_opt font').html('Success!');
             t_count = 0; //re
-            jQuery('#re-pro').attr('value',0);
         }else{
             return false;
         }
@@ -127,30 +132,34 @@ contentEval(function () {
         '---><a id="save-as" style="color:red" href="data:text/html;charset=utf-8,' + encodeURIComponent(EF.create_data('1')) + '" target="_blank" title="右键另存为" download="test"><span><em>导出(另存为或者点击)</span></em></a>'+
         '</div>'+
         '<div style="margin-top: 20px;">'+
-        '<p>后台运行<code>aria2c -c -s10 -x10 --enable-rpc</code>即可直接使用RPC按钮增加任务</p>'+
+        '<p>后台运行<code>aria2c -c -s10 -x10 --enable-rpc</code></p>'+
         '<div><input id="rpc-url" type="text" style="width:200px;background:rgba(0,0,0,0);" value="'+EF.get_rpc()+'"></input></div><div id="rpc" class="com_opt_btn"><span><em>RPC</em></span></div>'+
         '</div>'+
         '</div>';
+        jQuery('#messager').html(html);
+        /*
         jQuery("#choose_files_table").html(html);
         window.choose_download_files = new xfDialog("choose_download_files");
         XF.widget.msgbox.hide();
         choose_download_files.show();
         jQuery(".com_win_head_wrap em").html("导出");
         jQuery(".opt").hide();
+        */
 
         jQuery("#rpc").bind("click", function () {
             EF.rpc();
         });
-        var choose = jQuery("#choose");
-        choose.bind("change", function () {
-            var data = EF.create_data(choose.val());
+        jQuery("#choose").bind("change", function () {
+            var data = EF.create_data(jQuery(this).val());
             var href = "data:text/html;charset=utf-8," + encodeURIComponent(data);
             jQuery("#save-as").attr("href", href);
         });
+        /*
         jQuery("#choose_download_files .close_win").bind("click", function () {
             jQuery(".com_win_head_wrap em").html("下载任务");
             jQuery(".opt").show();
         });
+        */
     }
 
     EF.create_data = function (value) {
@@ -208,6 +217,7 @@ contentEval(function () {
         }
     }
     EF.hander_tasks = function(){
+        jQuery('#share_opt font').html('......');
         task_info = [];
         var data = EF.get_choice();
         console.log(data);
@@ -230,6 +240,7 @@ contentEval(function () {
         if (disabled) {
             return false;
         }
+        jQuery('#messager').html('RPC...');
         XF.widget.msgbox.show('后台添加任务中', 0, 1000, false);
         EF.hander_tasks();
         mode = 2;
