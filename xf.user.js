@@ -184,7 +184,7 @@ contentEval(function () {
                     html += "aria2c -c -s10 -x10 -o '" + name + "' --header 'Cookie: FTN5K=" + cookie + "' " + http + "\n";
                     break;
                 case '3':
-                    html += "wget -c -O " + name + "--header Cookie:FTN5K=" + cookie + " " + http + "\n";
+                    html += "wget -c -O '" + name + "' --header Cookie:FTN5K=" + cookie + " " + http + "\n";
                     break;
                 defalut:
                     break;
