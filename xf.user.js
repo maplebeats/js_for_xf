@@ -51,9 +51,28 @@ contentEval(function () {
 });
 contentEval(function () {
     EF = {};
-    var task_info = [];
     var mode = 1;
     var t_count = 0;
+    var task_info = [];
+    var add_task_info = function(j){
+        if(j){
+            task_info.push(j);
+        }
+        var count = task_info.length;
+
+        jQuery('#re-pro').attr('max',t_count).attr('value',count);
+        if(count == t_count){
+            if(mode === 1){
+                EF.init_pop();
+            }else if(mode === 2){
+                EF.rpc();
+            }
+            jQuery('#share_opt font').html('Success!');
+            t_count = 0; 
+        }else{
+            return false;
+        }
+    };
     EF.get_url = function (code) {
         jQuery.ajax({
             type: "post",
@@ -67,36 +86,20 @@ contentEval(function () {
                 if (data && data.ret == 0) {
                     var url = data["data"];
                     var temp_json = { "name": code.filename, "url": url.com_url, "cookie": url.com_cookie };
-                    task_info.push(temp_json);
-                    EF.task_check();
+                    add_task_info(temp_json);
                 }
                 else {
                     XF.widget.msgbox.show("请求url失败", 2, 2000);
                     t_count--;
-                    EF.task_check();
+                    add_task_info();
                 }
             },
             error: function () {
                 XF.widget.msgbox.show("请求url失败", 2, 2000);
                 t_count--;
-                EF.task_check();
+                add_task_info();
             }
         });
-    }
-    EF.task_check =  function(){
-        var count = task_info.length;
-        jQuery('#re-pro').attr('max',t_count).attr('value',count);
-        if(count == t_count){
-            if(mode === 1){
-                EF.init_pop();
-            }else if(mode === 2){
-                EF.rpc();
-            }
-            jQuery('#share_opt font').html('Success!');
-            t_count = 0; //re
-        }else{
-            return false;
-        }
     }
     EF.rpc = function (data) {
         var data = task_info;
