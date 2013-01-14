@@ -132,7 +132,7 @@ contentEval(function () {
         '<p>运行<code>aria2c -c -s10 -x10 -i file</code>使用下载文件</p>'+
         '<div>'+
         '<select id="choose" style="background:rgba(255,255,255,0.5);"><option value=1>aria2文件</option><option value=2>aria2命令</option><option value=3>wget命令</option></select>'+
-        '---><a id="save-as" style="color:red" href="data:text/html;charset=utf-8,' + encodeURIComponent(EF.create_data('1')) + '" target="_blank" title="右键另存为" download="test"><span><em>导出(另存为或者点击)</span></em></a>'+
+        '---><a id="save-as" style="color:red" href="data:text/plain;charset=utf-8,' + encodeURIComponent(EF.create_data('1')) + '" target="_blank" title="右键另存为" download="aria2.down"><span><em>导出(另存为或者点击)</span></em></a>'+
         '</div>'+
         '<div style="margin-top: 20px;">'+
         '<p>后台运行<code>aria2c -c -s10 -x10 --enable-rpc</code></p>'+
@@ -154,7 +154,7 @@ contentEval(function () {
         });
         jQuery("#choose").bind("change", function () {
             var data = EF.create_data(jQuery(this).val());
-            var href = "data:text/html;charset=utf-8," + encodeURIComponent(data);
+            var href = "data:text/plain;charset=utf-8," + encodeURIComponent(data);
             jQuery("#save-as").attr("href", href);
         });
         /*
