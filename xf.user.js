@@ -128,14 +128,18 @@ contentEval(function () {
             return 'http://localhost:6800/jsonrpc';
     }
     EF.init_pop = function () {
-        var html = '<div class="choose_start" style="height:150px;">'+
-        '<p>运行<code>aria2c -c -s10 -x10 -i file</code>使用下载文件</p>'+
-        '<div>'+
-        '<select id="choose" style="background:rgba(255,255,255,0.5);"><option value=1>aria2文件</option><option value=2>aria2命令</option><option value=3>wget命令</option></select>'+
-        '---><a id="save-as" style="color:red" href="data:text/html;charset=utf-8,' + encodeURIComponent(EF.create_data('1')) + '" target="_blank" title="右键另存为" download="test"><span><em>导出(另存为或者点击)</span></em></a>'+
+        var html = '<div class="choose_start" style="height:150px;width:100%;">'+
+        '<div style="margin-bottom: 20px;">'+
+        '<select id="choose" style="background:rgba(255,255,255,0.5);"><option value=1>aria2文件</option><option value=2>aria2命令</option><option value=3>wget命令</option><option value=4>aria2 json-rpc</option></select>'+
         '</div>'+
-        '<div style="margin-top: 20px;">'+
-        '<p>后台运行<code>aria2c -c -s10 -x10 --enable-rpc</code></p>'+
+        '<div id="show-export">'+
+            '<a id="save-as" class="icon_file" target="_blank" title="右键另存为" download="aria2.down">点击或右键另存为</a>'+
+            '<p>运行<code>aria2c -c -s10 -x10 -i aria2.down</code>进行下载</p>'+
+        '</div>'+
+        '<pre id="show-cmd" stlye="overflow-x: scroll;padding: 4px;border: 1px solid #CCC;">'+
+        '</pre>'+
+        '<div id="show-rpc">'+
+        '<p>确保后台已运行aria2 <code>aria2c -c -s10 -x10 --enable-rpc</code></p>'+
         '<div><input id="rpc-url" type="text" style="width:200px;background:rgba(0,0,0,0);" value="'+EF.get_rpc()+'"></input></div><div id="rpc" class="com_opt_btn"><span><em>RPC</em></span></div>'+
         '</div>'+
         '</div>';
@@ -154,9 +158,24 @@ contentEval(function () {
         });
         jQuery("#choose").bind("change", function () {
             var data = EF.create_data(jQuery(this).val());
-            var href = "data:text/html;charset=utf-8," + encodeURIComponent(data);
-            jQuery("#save-as").attr("href", href);
-        });
+
+            jQuery('#show-export, #show-cmd, #show-rpc').hide();
+            switch (parseInt(this.value)) {
+                case 1 : //export file
+                    var href = "data:text/plain;charset=utf-8," + encodeURIComponent(data);
+                    jQuery("#save-as").attr("href", href);
+                    jQuery('#show-export').show();
+                    break;
+                case 2 : //show command code
+                case 3 :
+                    jQuery('#show-cmd').show()
+                        .text(data);
+                    break;
+                case 4 : //json rpc
+                    jQuery('#show-rpc').show()
+                    break;
+            }
+        }).change();//init
         /*
         jQuery("#choose_download_files .close_win").bind("click", function () {
             jQuery(".com_win_head_wrap em").html("下载任务");
