@@ -3,7 +3,7 @@
 // @namespace   web QQ旋风/xuanfeng
 // @description 旋风离线链接导出
 // @include     http://lixian.qq.com/main.html*
-// @version     0.9.0
+// @version     0.9.1
 // @Author: maplebeats
 // @mail: maplebeats@gmail.com
 // ==/UserScript==
@@ -130,7 +130,7 @@ contentEval(function () {
     EF.init_pop = function () {
         var html = '<div class="choose_start" style="height:150px;width:100%;">'+
         '<div style="margin-bottom: 20px;">'+
-        '<select id="choose" style="background:rgba(255,255,255,0.5);"><option value=1>aria2文件</option><option value=2>aria2命令</option><option value=3>wget命令</option><option value=4>aria2 json-rpc</option></select>'+
+        '<select id="choose" style="background:rgba(255,255,255,0.5);"><option value=1>aria2文件</option><option value=2>aria2命令</option><option value=3>wget命令</option><option value=4>aria2 json-rpc</option><option value=5>IDM导出</option></select>'+
         '</div>'+
         '<div id="show-export">'+
             '<a id="save-as" class="icon_file" target="_blank" title="右键另存为" download="aria2.down">点击或右键另存为</a>'+
@@ -142,16 +142,10 @@ contentEval(function () {
         '<p>确保后台已运行aria2 <code>aria2c -c -s10 -x10 --enable-rpc</code></p>'+
         '<div><input id="rpc-url" type="text" style="width:200px;background:rgba(0,0,0,0);" value="'+EF.get_rpc()+'"></input></div><div id="rpc" class="com_opt_btn"><span><em>RPC</em></span></div>'+
         '</div>'+
+        '<div id="show-idm">'
+        '</div>'+
         '</div>';
         jQuery('#messager').html(html);
-        /*
-        jQuery("#choose_files_table").html(html);
-        window.choose_download_files = new xfDialog("choose_download_files");
-        XF.widget.msgbox.hide();
-        choose_download_files.show();
-        jQuery(".com_win_head_wrap em").html("导出");
-        jQuery(".opt").hide();
-        */
 
         jQuery("#rpc").bind("click", function () {
             EF.rpc();
@@ -159,7 +153,7 @@ contentEval(function () {
         jQuery("#choose").bind("change", function () {
             var data = EF.create_data(jQuery(this).val());
 
-            jQuery('#show-export, #show-cmd, #show-rpc').hide();
+            jQuery('#show-export, #show-cmd, #show-rpc, #show-idm').hide();
             switch (parseInt(this.value)) {
                 case 1 : //export file
                     var href = "data:text/plain;charset=utf-8," + encodeURIComponent(data);
@@ -168,20 +162,16 @@ contentEval(function () {
                     break;
                 case 2 : //show command code
                 case 3 :
-                    jQuery('#show-cmd').show()
-                        .text(data);
+                    jQuery('#show-cmd').show().text(data);
                     break;
                 case 4 : //json rpc
-                    jQuery('#show-rpc').show()
+                    jQuery('#show-rpc').show();
+                    break;
+                case 5: //IDM
+                    jQuery('#show-idm').show().text(data);
                     break;
             }
         }).change();//init
-        /*
-        jQuery("#choose_download_files .close_win").bind("click", function () {
-            jQuery(".com_win_head_wrap em").html("下载任务");
-            jQuery(".opt").show();
-        });
-        */
     }
 
     EF.create_data = function (value) {
@@ -207,6 +197,9 @@ contentEval(function () {
                     break;
                 case '3':
                     html += "wget -c -O '" + name + "' --header Cookie:FTN5K=" + cookie + " " + http + "\n";
+                    break;
+                case '5':
+                    html += '<\n' + http + '\n' + 'cookie: FTN5K=' + cookie +'\n>\n';
                     break;
                 defalut:
                     break;
