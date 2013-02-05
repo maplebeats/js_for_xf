@@ -143,6 +143,7 @@ contentEval(function () {
         '<div><input id="rpc-url" type="text" style="width:200px;background:rgba(0,0,0,0);" value="'+EF.get_rpc()+'"></input></div><div id="rpc" class="com_opt_btn"><span><em>RPC</em></span></div>'+
         '</div>'+
         '<div id="show-idm">'
+            '<a id="save-as" class="icon_file" target="_blank" title="右键另存为" download="idm.ef2">点击或右键另存为</a>'+
         '</div>'+
         '</div>';
         jQuery('#messager').html(html);
@@ -168,7 +169,9 @@ contentEval(function () {
                     jQuery('#show-rpc').show();
                     break;
                 case 5: //IDM
-                    jQuery('#show-idm').show().text(data);
+                    var href = "data:text/plain;charset=utf-8," + encodeURIComponent(data);
+                    jQuery("#save-as").attr("href", href);
+                    jQuery('#show-idm').show();
                     break;
             }
         }).change();//init
