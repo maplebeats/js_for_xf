@@ -142,7 +142,7 @@ contentEval(function () {
         '<p>确保后台已运行aria2 <code>aria2c -c -s10 -x10 --enable-rpc</code></p>'+
         '<div><input id="rpc-url" type="text" style="width:200px;background:rgba(0,0,0,0);" value="'+EF.get_rpc()+'"></input></div><div id="rpc" class="com_opt_btn"><span><em>RPC</em></span></div>'+
         '</div>'+
-        '<div id="show-idm">'
+        '<div id="show-idm">'+
             '<a id="save-as" class="icon_file" target="_blank" title="右键另存为" download="idm.ef2">点击或右键另存为</a>'+
         '</div>'+
         '</div>';
