@@ -6,11 +6,12 @@
 // @version     0.9.1
 // @Author: maplebeats
 // @mail: maplebeats@gmail.com
+// @run-at document-end
 // ==/UserScript==
 
 /*
 * BUG:文件重名无法正常下载.....
-* TIPS:$是tencent自己的一个function,不是jQuery
+* TIPS:$是tencent自己的一个function,不是$
 * TODO:aria2-rpc状态检查等
 */
 
@@ -34,22 +35,24 @@ function contentEval(source) {
     document.body.removeChild(script);
 }
 
-contentEval(function () {
+var  $ = unsafeWindow.jQuery;
+function clear() {
     var context = '<progress id="re-pro" value=0 style="width:280px;"></progress>'+
         '<font color="red"></font>'+
         '<div id="messager" style="border:1px solid;margin-top:5px;padding:5px;width:280px;">Welcome</div>';
-    jQuery("#share_opt").html(context).css('float','left').css('width','250px').css('margin','20px');
-    jQuery('.main').css('width','80%');
-    jQuery('#cont_wrap').css('width','100%');
-    jQuery("#down_box").remove();
-    jQuery(".mod_copyright").remove();
-    jQuery(".top").remove();
-    jQuery(".search_box").remove();
+    $("#share_opt").html(context).css('float','left').css('width','250px').css('margin','20px');
+    $('.main').css('width','80%');
+    $('#cont_wrap').css('width','100%');
+    $("#down_box").remove();
+    $(".mod_copyright").remove();
+    $(".top").remove();
+    $(".search_box").remove();
 
-    jQuery("#task_dl_local em").html("Aria2导出");
-    jQuery("#task_share_multi em").html('一键RPC');
-});
-contentEval(function () {
+    $("#task_dl_local em").html("Aria2导出");
+    $("#task_share_multi em").html('一键RPC');
+};
+clear();
+function run() {
     EF = {};
     var mode = 1;
     var t_count = 0;
@@ -60,21 +63,21 @@ contentEval(function () {
         }
         var count = task_info.length;
 
-        jQuery('#re-pro').attr('max',t_count).attr('value',count);
+        $('#re-pro').attr('max',t_count).attr('value',count);
         if(count == t_count){
             if(mode === 1){
                 EF.init_pop();
             }else if(mode === 2){
                 EF.rpc();
             }
-            jQuery('#share_opt font').html('Success!');
+            $('#share_opt font').html('Success!');
             t_count = 0; 
         }else{
             return false;
         }
     };
     EF.get_url = function (code) {
-        jQuery.ajax({
+        $.ajax({
             type: "post",
             url: "/handler/lixian/get_http_url.php",
             data: code,
@@ -103,7 +106,7 @@ contentEval(function () {
     }
     EF.rpc = function (data) {
         var data = task_info;
-        var url = jQuery("#rpc-url").val();
+        var url = $("#rpc-url").val();
         if(url == undefined){
             url = localStorage.rpc;
         }else{
@@ -146,32 +149,32 @@ contentEval(function () {
             '<a id="idm-save-as" class="icon_file" target="_blank" title="右键另存为" download="idm.ef2">点击或右键另存为</a>'+
         '</div>'+
         '</div>';
-        jQuery('#messager').html(html);
+        $('#messager').html(html);
 
-        jQuery("#rpc").bind("click", function () {
+        $("#rpc").bind("click", function () {
             EF.rpc();
         });
-        jQuery("#choose").bind("change", function () {
-            var data = EF.create_data(jQuery(this).val());
+        $("#choose").bind("change", function () {
+            var data = EF.create_data($(this).val());
 
-            jQuery('#show-export, #show-cmd, #show-rpc, #show-idm').hide();
+            $('#show-export, #show-cmd, #show-rpc, #show-idm').hide();
             switch (parseInt(this.value)) {
                 case 1 : //export file
                     var href = "data:text/plain;charset=utf-8," + encodeURIComponent(data);
-                    jQuery("#save-as").attr("href", href);
-                    jQuery('#show-export').show();
+                    $("#save-as").attr("href", href);
+                    $('#show-export').show();
                     break;
                 case 2 : //show command code
                 case 3 :
-                    jQuery('#show-cmd').show().text(data);
+                    $('#show-cmd').show().text(data);
                     break;
                 case 4 : //json rpc
-                    jQuery('#show-rpc').show();
+                    $('#show-rpc').show();
                     break;
                 case 5: //IDM
                     var href = "data:text/plain;charset=utf-8," + encodeURIComponent(data);
-                    jQuery("#idm-save-as").attr("href", href);
-                    jQuery('#show-idm').show();
+                    $("#idm-save-as").attr("href", href);
+                    $('#show-idm').show();
                     break;
             }
         }).change();//init
@@ -235,7 +238,7 @@ contentEval(function () {
         }
     }
     EF.hander_tasks = function(){
-        jQuery('#share_opt font').html('......');
+        $('#share_opt font').html('......');
         task_info = [];
         var data = EF.get_choice();
         console.log(data);
@@ -244,6 +247,9 @@ contentEval(function () {
             EF.get_url(data[i]);
         }
     }
+};
+run();
+contentEval(function(){
     EventHandler.task_batch2local = function (e) {
         var disabled = jQuery(e).hasClass("disabled_btn");
         if (disabled) {
@@ -258,10 +264,9 @@ contentEval(function () {
         if (disabled) {
             return false;
         }
-        jQuery('#messager').html('RPC...');
+        $('#messager').html('RPC...');
         XF.widget.msgbox.show('后台添加任务中', 0, 1000, false);
         EF.hander_tasks();
         mode = 2;
     }
 });
-
