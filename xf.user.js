@@ -205,7 +205,7 @@ function run() {
                     html += "wget -c -O '" + name + "' --header Cookie:FTN5K=" + cookie + " " + http + "\n";
                     break;
                 case '5':
-                    html += '<\n' + http + '\n' + 'cookie: FTN5K=' + cookie +'\n>\n\n';
+                    html += '<\r\n' + http + '\r\n' + 'cookie: FTN5K=' + cookie +'\r\n>\r\n\r\n';
                     break;
                 defalut:
                     break;
